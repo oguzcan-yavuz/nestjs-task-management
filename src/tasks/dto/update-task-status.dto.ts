@@ -1,5 +1,5 @@
-import { TaskStatus } from '../task.model';
+import { TaskStatus } from '../task-status.enum';
 
-export class UpdateTaskStatusDTO {
+export class UpdateTaskStatusDto {
   status: TaskStatus;
 }
