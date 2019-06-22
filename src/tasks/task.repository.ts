@@ -3,12 +3,18 @@ import { Task } from './task.entity';
 import { CreateTaskDto } from './dto/create-task.dto';
 import { TaskStatus } from './task-status.enum';
 import { GetTasksFilterDto } from './dto/get-tasks-filter.dto';
+import { User } from '../auth/user.entity';
 
 @EntityRepository(Task)
 export class TaskRepository extends Repository<Task> {
-  getTasks(filterDto: GetTasksFilterDto): Promise<Task[]> {
+  getTasks(
+    filterDto: GetTasksFilterDto,
+    user: User,
+  ): Promise<Task[]> {
     const { status, search } = filterDto;
     const query = this.createQueryBuilder('task');
+
+    query.where('task.userId = :userId', { userId: user.id });
 
     if (status) {
       query.andWhere('task.status = :status', { status });
@@ -21,10 +27,14 @@ export class TaskRepository extends Repository<Task> {
     return query.getMany();
   }
 
-  async createTask(createTaskDto: CreateTaskDto): Promise<Task> {
+  async createTask(
+    createTaskDto: CreateTaskDto,
+    user: User,
+  ): Promise<Task> {
     const task = new Task();
-    Object.assign(task, {...createTaskDto, status: TaskStatus.OPEN});
+    Object.assign(task, { ...createTaskDto, status: TaskStatus.OPEN, user });
     await task.save();
+    delete task.user;
 
     return task;
   }
