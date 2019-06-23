@@ -5,5 +5,5 @@ const dbConfig = config.get('db');
 
 export const typeOrmConfig: TypeOrmModuleOptions = {
   ...dbConfig,
-  entities: ['dist/**/**.entity{.ts,.js}'],
+  entities: [__dirname + '/../**/*.entity.{js,ts}'],
 };
